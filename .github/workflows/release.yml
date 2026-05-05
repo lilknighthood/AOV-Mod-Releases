@@ -1,34 +1,36 @@
-name: Auto Release Mod
+name: Auto Release Mở Lem Mod
 
 on:
   push:
     tags:
-      - 'v*' # Chạy khi bạn gắn thẻ tag như v1.0, v1.1
+      - 'v*' # Chỉ chạy khi bạn đẩy thẻ phiên bản (vd: v1.3.0)
 
 jobs:
-  build_and_release:
+  delivery_job:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Private Source
-        uses: actions/checkout@v3
+      # Bước 1: Máy ảo lấy các file từ kho Private của bạn về
+      - name: Checkout Source
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+      # Bước 2: Kiểm tra xem máy ảo đã thấy các file zip chưa (để bạn xem log)
+      - name: List files for debugging
+        run: ls -lh
 
-      - name: Run Mod Tool
-        run: |
-          # Chạy script của bạn để tạo ra các file .zip
-          python app.py --auto-mode 
-
+      # Bước 3: Chuyển các file zip sang kho Public
       - name: Upload to Public Repo Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          # Thay 'AOV-Mod-Releases' bằng tên Repo Public của bạn
-          repository: lilknighthood/AOV-Mod-Releases
+          # ĐỊA CHỈ KHO PUBLIC CỦA BẠN
+          repository: lilknighthood/AOV-Mod-Releases 
+          
+          # Token bí mật bạn đã cài trong Settings > Secrets
           token: ${{ secrets.RELEASE_TOKEN }}
+          
+          # Chỉ định đúng các file bạn muốn đưa lên
           files: |
-            MOD_CAM_*.zip
+            "Mờ Lem_*.zip"
+            
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
