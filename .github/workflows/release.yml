@@ -1,0 +1,34 @@
+name: Auto Release Mod
+
+on:
+  push:
+    tags:
+      - 'v*' # Chạy khi bạn gắn thẻ tag như v1.0, v1.1
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Source
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run Mod Tool
+        run: |
+          # Chạy script của bạn để tạo ra các file .zip
+          python app.py --auto-mode 
+
+      - name: Upload to Public Repo Release
+        uses: softprops/action-gh-release@v1
+        with:
+          # Thay 'AOV-Mod-Releases' bằng tên Repo Public của bạn
+          repository: lilknighthood/AOV-Mod-Releases
+          token: ${{ secrets.RELEASE_TOKEN }}
+          files: |
+            MOD_CAM_*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
